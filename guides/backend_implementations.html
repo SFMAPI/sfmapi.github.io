@@ -1,0 +1,1065 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Plugin Hub Implementation Checklist" href="plugin_hub_checklist.html"><link rel="prev" title="Error Model" href="../reference/errors.html">
+
+    <link rel="shortcut icon" href="../_static/favicon.svg"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+        <title>Implement a backend - sfmapi 0.0.1</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=17ed49e3" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  --color-brand-primary: #2563eb;
+  --color-brand-content: #2563eb;
+  --color-background-primary: #ffffff;
+  --color-foreground-primary: #111827;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #60a5fa;
+  --color-brand-content: #60a5fa;
+  --color-background-primary: #0f172a;
+  --color-foreground-primary: #e5e7eb;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #60a5fa;
+  --color-brand-content: #60a5fa;
+  --color-background-primary: #0f172a;
+  --color-foreground-primary: #e5e7eb;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+<div class="announcement">
+  <aside class="announcement-content">
+     <strong>Pre-release.</strong> API shapes may change before 1.0. <a href="https://sfmapi.github.io/guides/quickstart.html">Start with the quickstart</a> 
+  </aside>
+</div>
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">sfmapi 0.0.1</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <span class="sidebar-brand-text">sfmapi 0.0.1</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Start here</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/curl_tour.html">First REST workflow with curl</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Use the API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../reference/api.html">REST API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/openapi.html">OpenAPI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mcp.html">MCP adapter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/auth.html">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/errors.html">Error Model</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Build backends</span></p>
+<ul class="current">
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Implement a backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugin_hub_checklist.html">Plugin Hub Implementation Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="storage.html">Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jobs_and_progress.html">Jobs and progress</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Operate sfmapi</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multitenancy.html">Multi-tenancy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/cli.html">CLI / scripts</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">SDKs and clients</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../sdk/index.html">SDK overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Specification</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../spec.html">SFMAPI Specification</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribute and internals</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_policy.html">Release policy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../server/orchestrator.html"><code class="docutils literal notranslate"><span class="pre">app.orchestrator</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../server/storage.html"><code class="docutils literal notranslate"><span class="pre">app.storage</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../server/workers.html"><code class="docutils literal notranslate"><span class="pre">app.workers</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../server/adapters.html">Public Backend API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../server/services.html"><code class="docutils literal notranslate"><span class="pre">app.services</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/sfmapi/sfmapi">GitHub repository</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/SFMAPI/sfmapi/blob/main/docs/guides/backend_implementations.md?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/SFMAPI/sfmapi/edit/main/docs/guides/backend_implementations.md" rel="edit" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="implement-a-backend">
+<h1>Implement a backend<a class="headerlink" href="#implement-a-backend" title="Link to this heading">¶</a></h1>
+<p>sfmapi ships <strong>no concrete SfM engine</strong>. Real reconstructions happen
+in a backend package you (or someone else) ships separately. This
+page is the contract.</p>
+<section id="backend-levels">
+<h2>Backend levels<a class="headerlink" href="#backend-levels" title="Link to this heading">¶</a></h2>
+<p>Backends use structural typing: no inheritance, no metaclass, just the
+methods they actually support. The minimum contract is
+<a class="reference internal" href="../server/adapters.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">sfmapi.backends.Backend</span></code></span></a>: <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">version</span></code>, <code class="docutils literal notranslate"><span class="pre">vendor</span></code>,
+<code class="docutils literal notranslate"><span class="pre">capabilities()</span></code>, and <code class="docutils literal notranslate"><span class="pre">runtime_versions()</span></code>.</p>
+<p>Use the smallest level that fits:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Level</p></th>
+<th class="head"><p>Implement</p></th>
+<th class="head"><p>Best for</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Native actions</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Backend</span></code> plus <code class="docutils literal notranslate"><span class="pre">list_backend_actions()</span></code>, <code class="docutils literal notranslate"><span class="pre">validate_backend_action()</span></code>, <code class="docutils literal notranslate"><span class="pre">run_backend_action()</span></code></p></td>
+<td><p>vendor CLIs, research repos, workflows that do not expose portable stage artifacts</p></td>
+</tr>
+<tr class="row-odd"><td><p>Artifact/stage backend</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Backend</span></code> plus one or more stage protocols such as <code class="docutils literal notranslate"><span class="pre">FeatureBackend</span></code>, <code class="docutils literal notranslate"><span class="pre">MappingBackend</span></code>, or <code class="docutils literal notranslate"><span class="pre">ExportBackend</span></code></p></td>
+<td><p>tools that can consume/produce sfmapi-compatible databases, models, or snapshots</p></td>
+</tr>
+<tr class="row-even"><td><p>Full SfM backend</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SfmBackend</span></code></p></td>
+<td><p>engines that support the full portable feature/match/map/refine/export surface</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Workers guard optional stage methods with
+<code class="docutils literal notranslate"><span class="pre">require_backend_method(...)</span></code>. If an action-only backend receives a
+portable stage request it does not implement, sfmapi returns the
+normal <code class="docutils literal notranslate"><span class="pre">501</span> <span class="pre">CapabilityUnavailableError</span></code> instead of an internal
+<code class="docutils literal notranslate"><span class="pre">AttributeError</span></code>.</p>
+</section>
+<section id="portable-stage-backend">
+<h2>Portable stage backend<a class="headerlink" href="#portable-stage-backend" title="Link to this heading">¶</a></h2>
+<p>Full portable backends can satisfy <a class="reference internal" href="../server/adapters.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">sfmapi.backends.SfmBackend</span></code></span></a> by
+structural typing — no inheritance required, no metaclass. A backend
+is any class with the right method names, signatures, and an
+identity triple (<code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">version</span></code>, <code class="docutils literal notranslate"><span class="pre">vendor</span></code>).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sfmapi.backends</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProgressReporter</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyBackend</span><span class="p">:</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;my_backend&quot;</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;0.1.0&quot;</span>
+    <span class="n">vendor</span> <span class="o">=</span> <span class="s2">&quot;me&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">capabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="c1"># Advertise only what&#39;s wired. The /v1/capabilities endpoint</span>
+        <span class="c1"># surfaces this set; clients use it to decide which stages</span>
+        <span class="c1"># they can ask for.</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;features.extract.sift&quot;</span><span class="p">,</span> <span class="s2">&quot;pairs.exhaustive&quot;</span><span class="p">,</span> <span class="s2">&quot;matchers.nn-mutual&quot;</span><span class="p">,</span> <span class="s2">&quot;ba.standard&quot;</span><span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">extract_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">database_path</span><span class="p">,</span> <span class="n">image_root</span><span class="p">,</span>
+                         <span class="n">image_list</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span>
+                         <span class="n">progress</span><span class="p">:</span> <span class="n">ProgressReporter</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="c1"># progress is optional. Older backends can omit it; sfmapi only</span>
+        <span class="c1"># passes the keyword when the method signature accepts it.</span>
+        <span class="k">if</span> <span class="n">progress</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">progress</span><span class="o">.</span><span class="n">phase_progress</span><span class="p">(</span>
+                <span class="s2">&quot;feature_extraction&quot;</span><span class="p">,</span>
+                <span class="n">current</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">image_list</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="o">...</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">database_path</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span>
+              <span class="n">progress</span><span class="p">:</span> <span class="n">ProgressReporter</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="o">...</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">bundle_adjustment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="o">...</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">runtime_versions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+        <span class="c1"># Returned by /v1/version under backend.runtime_versions.</span>
+        <span class="c1"># Roll any sha / version / arch into here that should</span>
+        <span class="c1"># invalidate the cache when it changes.</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;engine_sha&quot;</span><span class="p">:</span> <span class="s2">&quot;abc123&quot;</span><span class="p">,</span> <span class="s2">&quot;cuda_arch&quot;</span><span class="p">:</span> <span class="s2">&quot;120&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Only implement a stage method after the corresponding capability is
+real. For example, advertise <code class="docutils literal notranslate"><span class="pre">features.extract.sift</span></code> only when
+<code class="docutils literal notranslate"><span class="pre">extract_features(...)</span></code> succeeds for valid inputs. Unsupported stage
+methods may be omitted entirely. If you choose to implement a method
+but reject some modes, raise <code class="docutils literal notranslate"><span class="pre">CapabilityUnavailableError</span></code>.</p>
+</section>
+<section id="action-only-backend">
+<h2>Action-only backend<a class="headerlink" href="#action-only-backend" title="Link to this heading">¶</a></h2>
+<p>Action-only backends are first-class. They keep <code class="docutils literal notranslate"><span class="pre">capabilities()</span></code> empty
+unless they also implement portable stages, and publish backend-native
+tools through the action catalog:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">VendorCliBackend</span><span class="p">:</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;vendor_cli&quot;</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;0.1.0&quot;</span>
+    <span class="n">vendor</span> <span class="o">=</span> <span class="s2">&quot;Vendor&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">capabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">runtime_versions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;vendor_cli&quot;</span><span class="p">:</span> <span class="s2">&quot;2026.1&quot;</span><span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">list_backend_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">include_schemas</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span> <span class="s2">&quot;additionalProperties&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+        <span class="k">return</span> <span class="p">[{</span>
+            <span class="s2">&quot;action_id&quot;</span><span class="p">:</span> <span class="s2">&quot;vendor_cli.reconstruct&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;display_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Vendor reconstruct&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="s2">&quot;reconstruction&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;stability&quot;</span><span class="p">:</span> <span class="s2">&quot;backend_extension&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;side_effects&quot;</span><span class="p">:</span> <span class="s2">&quot;write&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;required_capabilities&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;input_schema&quot;</span><span class="p">:</span> <span class="n">schema</span> <span class="k">if</span> <span class="n">include_schemas</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">}]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_backend_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;action_id&quot;</span><span class="p">:</span> <span class="n">action_id</span><span class="p">,</span> <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;normalized_inputs&quot;</span><span class="p">:</span> <span class="n">inputs</span><span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_backend_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">workspace</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="registering-at-startup">
+<h2>Registering at startup<a class="headerlink" href="#registering-at-startup" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sfmapi.runtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_backend</span>
+
+<span class="n">register_backend</span><span class="p">(</span><span class="s2">&quot;my_backend&quot;</span><span class="p">,</span> <span class="n">MyBackend</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then either:</p>
+<ul class="simple">
+<li><p>set the env var: <code class="docutils literal notranslate"><span class="pre">SFMAPI_BACKEND=my_backend</span></code>, or</p></li>
+<li><p>pass <code class="docutils literal notranslate"><span class="pre">name=</span></code> to <code class="docutils literal notranslate"><span class="pre">get_backend(&quot;my_backend&quot;)</span></code> for explicit selection.</p></li>
+</ul>
+<p>A common pattern is to register from the package’s <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> so
+that <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">my_backend</span></code> is the only thing the operator needs:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># my_backend/__init__.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sfmapi.runtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_backend</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">MyBackend</span>
+
+<span class="n">register_backend</span><span class="p">(</span><span class="s2">&quot;my_backend&quot;</span><span class="p">,</span> <span class="n">MyBackend</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="reference-backend-packages">
+<h2>Reference backend packages<a class="headerlink" href="#reference-backend-packages" title="Link to this heading">¶</a></h2>
+<p>The maintained demo backends follow the same API discovery contract:
+portable features in <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/capabilities</span></code>, backend-native commands
+in <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/backend/actions</span></code>, and provider-specific stage options in
+<code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/backend/config-schemas</span></code>.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Repo</p></th>
+<th class="head"><p>Launcher</p></th>
+<th class="head"><p>Backend family</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sfmapi_colmap_cli</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sfmapi-colmap-cli-api</span></code></p></td>
+<td><p>Original COLMAP CLI</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sfmapi_pycolmap</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sfmapi-pycolmap-api</span></code></p></td>
+<td><p>PyCOLMAP with COLMAP CLI fallback</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sfmapi_colmap</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sfmapi-colmap-api</span></code></p></td>
+<td><p>Native COLMAP, PyCOLMAP, and C++ demos</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sfmapi_realityscan</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sfmapi-realityscan-api</span></code></p></td>
+<td><p>RealityCapture/RealityScan CLI actions</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sfmapi_instantsfm</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sfmapi-instantsfm-api</span></code></p></td>
+<td><p>InstantSfM Python actions</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sfmapi_spheresfm</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sfmapi-spheresfm-api</span></code></p></td>
+<td><p>SphereSfM/COLMAP-derived spherical actions</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>These packages use distinct Python import packages so agents and
+tools can install or inspect more than one backend in the same
+environment without module-name collisions.</p>
+</section>
+<section id="capability-strings">
+<h2>Capability strings<a class="headerlink" href="#capability-strings" title="Link to this heading">¶</a></h2>
+<p>The capability vocabulary is canonical and stable. Backends advertise
+the subset they implement; sfmapi reads <code class="docutils literal notranslate"><span class="pre">capabilities()</span></code> once at
+boot and caches the result. The full list lives in
+<code class="docutils literal notranslate"><span class="pre">app.core.capabilities.ALL_KNOWN</span></code>.</p>
+<p>Do not put backend-native commands or vendor tool names in
+<code class="docutils literal notranslate"><span class="pre">capabilities()</span></code>. Capabilities are portable sfmapi features. If a
+backend has its own tools such as <code class="docutils literal notranslate"><span class="pre">openmvg.compute_features</span></code>,
+<code class="docutils literal notranslate"><span class="pre">hloc.match_pairs</span></code>, or <code class="docutils literal notranslate"><span class="pre">colmap.feature_extractor</span></code>, expose them as
+backend actions instead.</p>
+<p>Common categories:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Category</p></th>
+<th class="head"><p>Capability strings</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Feature extraction</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">features.extract.{sift,</span> <span class="pre">superpoint,</span> <span class="pre">aliked,</span> <span class="pre">disk,</span> <span class="pre">r2d2,</span> <span class="pre">d2net}</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Pair selection</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pairs.{exhaustive,</span> <span class="pre">sequential,</span> <span class="pre">spatial,</span> <span class="pre">vocabtree,</span> <span class="pre">retrieval,</span> <span class="pre">from_poses,</span> <span class="pre">explicit}</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Matching</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">matchers.{nn-mutual,</span> <span class="pre">nn-ratio,</span> <span class="pre">superglue,</span> <span class="pre">lightglue,</span> <span class="pre">loftr,</span> <span class="pre">mast3r}</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Mapping</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">map.{incremental,</span> <span class="pre">global,</span> <span class="pre">hierarchical,</span> <span class="pre">spherical}</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Bundle adjustment</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ba.{standard,</span> <span class="pre">two_stage,</span> <span class="pre">featuremetric}</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Dense</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dense.patch_match_stereo</span></code>, <code class="docutils literal notranslate"><span class="pre">dense.fusion</span></code>, <code class="docutils literal notranslate"><span class="pre">mesh.{poisson,</span> <span class="pre">delaunay}</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Projection</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">projection.{equirectangular_to_cubemap,</span> <span class="pre">cubemap_to_equirectangular,</span> <span class="pre">equirectangular_to_perspective,</span> <span class="pre">cubemap_rig}</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Other</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">relocalize.images</span></code>, <code class="docutils literal notranslate"><span class="pre">pgo.optimize</span></code>, <code class="docutils literal notranslate"><span class="pre">triangulate.retri</span></code>, <code class="docutils literal notranslate"><span class="pre">export.{ply,</span> <span class="pre">nvm,</span> <span class="pre">txt,</span> <span class="pre">bin}</span></code>, legacy <code class="docutils literal notranslate"><span class="pre">spherical.{to_cubemap,</span> <span class="pre">render_cubemap}</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>If you advertise a capability, the corresponding portable stage method
+must succeed when called. If a backend does not implement that stage,
+omit both the capability and the method. sfmapi converts accidental
+portable-stage calls into a clean 501 with the capability name.</p>
+<p>Projection-capable backends should prefer one generic
+<code class="docutils literal notranslate"><span class="pre">project_images(operation,</span> <span class="pre">input_image_path,</span> <span class="pre">output_path,</span> <span class="pre">spec)</span></code> method.
+For compatibility, <code class="docutils literal notranslate"><span class="pre">equirectangular_to_cubemap</span></code> can still be served by
+the older <code class="docutils literal notranslate"><span class="pre">render_spherical_cubemap_images(...)</span></code> hook. The portable
+cubemap convention is <code class="docutils literal notranslate"><span class="pre">sfmapi-opencv</span></code>: face cameras use OpenCV image
+axes, and the canonical face order is <code class="docutils literal notranslate"><span class="pre">front</span></code>, <code class="docutils literal notranslate"><span class="pre">right</span></code>, <code class="docutils literal notranslate"><span class="pre">back</span></code>, <code class="docutils literal notranslate"><span class="pre">left</span></code>,
+<code class="docutils literal notranslate"><span class="pre">up</span></code>, <code class="docutils literal notranslate"><span class="pre">down</span></code>.</p>
+<p>sfmapi core can provide only the generic pixel path for
+<code class="docutils literal notranslate"><span class="pre">projection.equirectangular_to_cubemap</span></code> when the <code class="docutils literal notranslate"><span class="pre">projection</span></code> extra is
+installed. It supports <code class="docutils literal notranslate"><span class="pre">nearest</span></code> and <code class="docutils literal notranslate"><span class="pre">linear</span></code> sampling. Higher-order
+sampling, reverse cubemap rendering, and equirectangular-to-perspective
+views are contract-only in core. Backends that implement those paths
+must advertise the corresponding <code class="docutils literal notranslate"><span class="pre">projection.*</span></code> capability and return a
+manifest-compatible result.</p>
+<p>Projection result dictionaries may include <code class="docutils literal notranslate"><span class="pre">source_images</span></code>,
+<code class="docutils literal notranslate"><span class="pre">output_images</span></code>, and <code class="docutils literal notranslate"><span class="pre">derived_dataset</span></code>. If <code class="docutils literal notranslate"><span class="pre">derived_dataset</span></code> is present,
+sfmapi registers the output directory as a normal Dataset with Image
+rows. If it is omitted and the request keeps <code class="docutils literal notranslate"><span class="pre">output.create_dataset=true</span></code>,
+sfmapi derives a conservative dataset manifest from the files written to
+the output directory. Requested derived dataset names are collision-safe:
+sfmapi appends a task suffix when a name already exists, and task retries
+reuse the dataset registered for the same derived output root.</p>
+<p><code class="docutils literal notranslate"><span class="pre">FeaturesSpec</span></code>, <code class="docutils literal notranslate"><span class="pre">PairsSpec</span></code>, and <code class="docutils literal notranslate"><span class="pre">MatcherSpec</span></code> each have an optional
+<code class="docutils literal notranslate"><span class="pre">provider</span></code> field. Use it only to disambiguate implementations that
+share a portable capability, such as COLMAP SIFT and hloc learned
+features. Keep the capability portable (<code class="docutils literal notranslate"><span class="pre">features.extract.sift</span></code>,
+<code class="docutils literal notranslate"><span class="pre">pairs.retrieval</span></code>, <code class="docutils literal notranslate"><span class="pre">matchers.superglue</span></code>); put backend-native tool
+names in backend actions instead.</p>
+<p>Stage specs also expose <code class="docutils literal notranslate"><span class="pre">backend_options</span></code>. Use this for
+provider-specific knobs that are not part of the portable sfmapi
+contract, for example COLMAP’s <code class="docutils literal notranslate"><span class="pre">SiftExtraction.peak_threshold</span></code> or an
+hloc extractor’s model checkpoint. Do not add those knobs as top-level
+sfmapi fields unless they are meaningful across backends.</p>
+<p>For <code class="docutils literal notranslate"><span class="pre">pairs.strategy=&quot;explicit&quot;</span></code>, the worker materializes either inline
+<code class="docutils literal notranslate"><span class="pre">image_pairs</span></code> or an uploaded pair-list blob into
+<code class="docutils literal notranslate"><span class="pre">options[&quot;pairs&quot;][&quot;pairs_path&quot;]</span></code> / <code class="docutils literal notranslate"><span class="pre">match_list_path</span></code> before calling
+<code class="docutils literal notranslate"><span class="pre">backend.match(...)</span></code>. The pair-list text format is one <code class="docutils literal notranslate"><span class="pre">image1</span> <span class="pre">image2</span></code>
+row per line.</p>
+</section>
+<section id="stage-output-artifacts">
+<h2>Stage output artifacts<a class="headerlink" href="#stage-output-artifacts" title="Link to this heading">¶</a></h2>
+<p>Backend methods should return a dict. Data products must be declared
+explicitly in an <code class="docutils literal notranslate"><span class="pre">artifacts</span></code> list so clients can choose among multiple
+outputs without guessing from backend-local paths:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">return</span> <span class="p">{</span>
+    <span class="s2">&quot;database_path&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">database_path</span><span class="p">),</span>
+    <span class="s2">&quot;artifacts&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;kind&quot;</span><span class="p">:</span> <span class="s2">&quot;matches.indexed.v1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;hloc-lightglue&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;uri&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">matches_path</span><span class="p">),</span>
+            <span class="s2">&quot;artifact_format&quot;</span><span class="p">:</span> <span class="s2">&quot;sfmapi.matches.indexed.v1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;schema_version&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;summary&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;num_pairs&quot;</span><span class="p">:</span> <span class="mi">12000</span><span class="p">,</span> <span class="s2">&quot;num_matches&quot;</span><span class="p">:</span> <span class="mi">2400000</span><span class="p">},</span>
+            <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;provider&quot;</span><span class="p">:</span> <span class="s2">&quot;hloc&quot;</span><span class="p">,</span> <span class="s2">&quot;feature_set&quot;</span><span class="p">:</span> <span class="s2">&quot;superpoint&quot;</span><span class="p">},</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;kind&quot;</span><span class="p">:</span> <span class="s2">&quot;matches.database.colmap&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;colmap-sift&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;uri&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">colmap_matches_path</span><span class="p">),</span>
+            <span class="s2">&quot;artifact_format&quot;</span><span class="p">:</span> <span class="s2">&quot;colmap.matches.database.v1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;schema_version&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;summary&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;num_pairs&quot;</span><span class="p">:</span> <span class="mi">9000</span><span class="p">,</span> <span class="s2">&quot;num_matches&quot;</span><span class="p">:</span> <span class="mi">1800000</span><span class="p">},</span>
+            <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;provider&quot;</span><span class="p">:</span> <span class="s2">&quot;colmap&quot;</span><span class="p">,</span> <span class="s2">&quot;feature_set&quot;</span><span class="p">:</span> <span class="s2">&quot;sift&quot;</span><span class="p">},</span>
+        <span class="p">},</span>
+    <span class="p">],</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Artifact <code class="docutils literal notranslate"><span class="pre">kind</span></code> values are dot-notated identifiers. Reserved core kinds
+include <code class="docutils literal notranslate"><span class="pre">features.local.v1</span></code>, <code class="docutils literal notranslate"><span class="pre">features.global.v1</span></code>,
+<code class="docutils literal notranslate"><span class="pre">pairs.image_names.v1</span></code>, <code class="docutils literal notranslate"><span class="pre">matches.indexed.v1</span></code>,
+<code class="docutils literal notranslate"><span class="pre">matches.coordinates.v1</span></code>, <code class="docutils literal notranslate"><span class="pre">matches.dense.v1</span></code>,
+<code class="docutils literal notranslate"><span class="pre">matches.verified.v1</span></code>, <code class="docutils literal notranslate"><span class="pre">reconstruction.sparse.v1</span></code>,
+<code class="docutils literal notranslate"><span class="pre">reconstruction.snapshot</span></code>, and <code class="docutils literal notranslate"><span class="pre">reconstruction.submodel</span></code>. Use
+same-family namespaced extension kinds for backend-native formats, for
+example <code class="docutils literal notranslate"><span class="pre">features.hloc_h5</span></code> or <code class="docutils literal notranslate"><span class="pre">matches.database.colmap</span></code>.
+<code class="docutils literal notranslate"><span class="pre">artifact_format</span></code> is the concrete storage or interchange contract.
+Portable outputs should use versioned <code class="docutils literal notranslate"><span class="pre">sfmapi.*.v1</span></code> format ids.
+Backend-native outputs should use backend-owned ids such as
+<code class="docutils literal notranslate"><span class="pre">hloc.features.h5.v1</span></code> or <code class="docutils literal notranslate"><span class="pre">colmap.matches.database.v1</span></code>.</p>
+<p>Invalid artifact descriptors fail the task with a clear validation
+error. Clients discover outputs with <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/jobs/{job_id}/artifacts</span></code>,
+<code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/reconstructions/{recon_id}/artifacts</span></code>, or
+<code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/artifacts/{artifact_id}</span></code>. List endpoints support exact
+<code class="docutils literal notranslate"><span class="pre">kind</span></code>, <code class="docutils literal notranslate"><span class="pre">task_id</span></code>, and <code class="docutils literal notranslate"><span class="pre">name</span></code> filters. <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/artifacts/kinds</span></code>
+returns the reserved semantic vocabulary; <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/artifacts/formats</span></code>
+returns the reserved core interchange formats.</p>
+</section>
+<section id="stage-input-artifacts">
+<h2>Stage input artifacts<a class="headerlink" href="#stage-input-artifacts" title="Link to this heading">¶</a></h2>
+<p>Clients can pass artifacts back into later stages through
+<code class="docutils literal notranslate"><span class="pre">input_artifacts</span></code>, a role-keyed map of artifact references. Core roles
+are <code class="docutils literal notranslate"><span class="pre">features</span></code>, <code class="docutils literal notranslate"><span class="pre">pairs</span></code>, <code class="docutils literal notranslate"><span class="pre">matches</span></code>, <code class="docutils literal notranslate"><span class="pre">verified_matches</span></code>, <code class="docutils literal notranslate"><span class="pre">snapshot</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">submodel</span></code>; backend-specific roles may use the same dot-key syntax.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;input_artifacts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;artifact_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;01HZ...&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;features.local.v1&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>sfmapi validates tenant scope, optional dataset scope, expected kind,
+and core role compatibility before a job is created. All resolved
+artifact descriptors are passed to the backend in
+<code class="docutils literal notranslate"><span class="pre">options[&quot;input_artifacts&quot;]</span></code> so mixed backends can consume richer
+formats without adding portable fields.</p>
+<p>Artifact rows are created for new task completions. Pre-release
+databases are not backfilled automatically; rerun the stage if an older
+job needs typed artifact rows.</p>
+</section>
+<section id="backend-artifact-contracts">
+<h2>Backend artifact contracts<a class="headerlink" href="#backend-artifact-contracts" title="Link to this heading">¶</a></h2>
+<p>Backends can publish artifact input/output contracts through
+<code class="docutils literal notranslate"><span class="pre">list_backend_artifact_contracts()</span></code>. This is the discovery surface for
+interchange: it tells a client which portable or backend-native kinds
+and format ids a stage accepts and emits.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyBackend</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list_backend_artifact_contracts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;contract_id&quot;</span><span class="p">:</span> <span class="s2">&quot;my_backend.matcher.lightglue&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;stage&quot;</span><span class="p">:</span> <span class="s2">&quot;matcher&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;capability&quot;</span><span class="p">:</span> <span class="s2">&quot;matchers.lightglue&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;provider&quot;</span><span class="p">:</span> <span class="s2">&quot;my_backend&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;display_name&quot;</span><span class="p">:</span> <span class="s2">&quot;LightGlue match artifacts&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;accepts&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;features.local.v1&quot;</span><span class="p">,</span> <span class="s2">&quot;pairs.image_names.v1&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;emits&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;matches.indexed.v1&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;accepts_formats&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="s2">&quot;sfmapi.features.local.v1&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;sfmapi.pairs.image_names.v1&quot;</span><span class="p">,</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;emits_formats&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;sfmapi.matches.indexed.v1&quot;</span><span class="p">,</span> <span class="s2">&quot;hloc.matches.h5.v1&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;preferred&quot;</span><span class="p">:</span> <span class="s2">&quot;matches.indexed.v1&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;preferred_format&quot;</span><span class="p">:</span> <span class="s2">&quot;sfmapi.matches.indexed.v1&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;conversions&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;from_format&quot;</span><span class="p">:</span> <span class="s2">&quot;hloc.matches.h5.v1&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;to_format&quot;</span><span class="p">:</span> <span class="s2">&quot;sfmapi.matches.indexed.v1&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;lossless&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Descriptor scores are not preserved.&quot;</span><span class="p">,</span>
+                    <span class="p">}</span>
+                <span class="p">],</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
+</pre></div>
+</div>
+<p>If a backend omits this method, sfmapi derives a conservative contract
+from advertised portable capabilities. Explicit contracts are preferred
+for backends that can consume native formats or expose conversions.
+When <code class="docutils literal notranslate"><span class="pre">accepts_formats</span></code>, <code class="docutils literal notranslate"><span class="pre">emits_formats</span></code>, or <code class="docutils literal notranslate"><span class="pre">preferred_format</span></code> are
+omitted for core kinds, sfmapi fills them from the core format
+vocabulary.</p>
+<p>When a contract advertises <code class="docutils literal notranslate"><span class="pre">conversions</span></code>, the backend must also
+implement <code class="docutils literal notranslate"><span class="pre">convert_artifact(...)</span></code>. sfmapi uses this method for
+<code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/v1/artifacts/{artifact_id}:convert</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">convert_artifact</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">input_artifact</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="n">to_format</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">to_kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">options</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;matches.json&quot;</span>
+    <span class="c1"># Write the requested format, then return normal artifact descriptors.</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;artifacts&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="s2">&quot;kind&quot;</span><span class="p">:</span> <span class="n">to_kind</span> <span class="ow">or</span> <span class="s2">&quot;matches.indexed.v1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;lightglue-indexed&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;uri&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">target</span><span class="p">),</span>
+            <span class="s2">&quot;media_type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;artifact_format&quot;</span><span class="p">:</span> <span class="n">to_format</span><span class="p">,</span>
+            <span class="s2">&quot;schema_version&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="p">}]</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+<p>Clients can call <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/v1/artifacts/{id}:conversionPlan</span></code> with
+<code class="docutils literal notranslate"><span class="pre">accepted_formats</span></code> to let sfmapi choose the shortest conversion path.
+If the path has multiple steps, sfmapi calls <code class="docutils literal notranslate"><span class="pre">convert_artifact()</span></code> once
+per step inside the conversion task and passes each returned artifact
+descriptor into the next call. The API does not silently reinterpret
+bytes: missing conversion contracts, lossy conversions when
+<code class="docutils literal notranslate"><span class="pre">require_lossless=true</span></code>, and missing <code class="docutils literal notranslate"><span class="pre">convert_artifact()</span></code>
+implementations fail before work is queued.</p>
+<p>Clients can also register externally produced artifacts with
+<code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/v1/artifacts:import</span></code>. Imports create a completed
+<code class="docutils literal notranslate"><span class="pre">artifact_import</span></code> job/task and then persist a normal <code class="docutils literal notranslate"><span class="pre">StageArtifact</span></code>.
+Backends should therefore treat imported artifacts exactly like
+worker-produced artifacts: validate <code class="docutils literal notranslate"><span class="pre">kind</span></code> and <code class="docutils literal notranslate"><span class="pre">artifact_format</span></code>, then
+consume the advertised <code class="docutils literal notranslate"><span class="pre">uri</span></code> or <code class="docutils literal notranslate"><span class="pre">files</span></code> entries.</p>
+</section>
+<section id="backend-config-schemas">
+<h2>Backend config schemas<a class="headerlink" href="#backend-config-schemas" title="Link to this heading">¶</a></h2>
+<p>Backends can publish JSON Schemas for their <code class="docutils literal notranslate"><span class="pre">backend_options</span></code> through
+an optional <code class="docutils literal notranslate"><span class="pre">list_backend_config_schemas()</span></code> method. Clients discover
+them with <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/backend/config-schemas</span></code>; when a matching schema is
+available, sfmapi uses it to reject unknown keys and simple type or
+enum mistakes before creating a job. If no matching schema exists,
+options pass through to the backend.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyBackend</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list_backend_config_schemas</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">[{</span>
+            <span class="s2">&quot;config_id&quot;</span><span class="p">:</span> <span class="s2">&quot;my_backend.features.superpoint&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;stage&quot;</span><span class="p">:</span> <span class="s2">&quot;features&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;capability&quot;</span><span class="p">:</span> <span class="s2">&quot;features.extract.superpoint&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;provider&quot;</span><span class="p">:</span> <span class="s2">&quot;my_backend&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;display_name&quot;</span><span class="p">:</span> <span class="s2">&quot;SuperPoint options&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;option_schema&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;additionalProperties&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;model_name&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
+                    <span class="s2">&quot;max_keypoints&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">},</span>
+                <span class="p">},</span>
+            <span class="p">},</span>
+        <span class="p">}]</span>
+</pre></div>
+</div>
+<p>Descriptor rules:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">config_id</span></code> is a stable, dot-namespaced id such as
+<code class="docutils literal notranslate"><span class="pre">colmap.features.sift</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stage</span></code> is the portable stage (<code class="docutils literal notranslate"><span class="pre">features</span></code>, <code class="docutils literal notranslate"><span class="pre">pairs</span></code>, <code class="docutils literal notranslate"><span class="pre">matcher</span></code>,
+<code class="docutils literal notranslate"><span class="pre">verify</span></code>, <code class="docutils literal notranslate"><span class="pre">mapping</span></code>, or <code class="docutils literal notranslate"><span class="pre">bundle_adjustment</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">capability</span></code> should be the portable capability the schema applies
+to, such as <code class="docutils literal notranslate"><span class="pre">features.extract.sift</span></code> or <code class="docutils literal notranslate"><span class="pre">map.incremental</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">provider</span></code> should match the request spec’s optional provider
+selector when the schema is provider-specific.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">option_schema</span></code> describes only user-supplied backend options. Do
+not require runtime-managed paths such as databases, image roots, or
+output directories; sfmapi supplies those to worker methods.</p></li>
+</ul>
+<p>Set <code class="docutils literal notranslate"><span class="pre">additionalProperties:</span> <span class="pre">false</span></code> on every <code class="docutils literal notranslate"><span class="pre">option_schema</span></code>. The
+contract checker rejects schemas without it so sfmapi can catch
+misspelled <code class="docutils literal notranslate"><span class="pre">backend_options</span></code> before a job is queued.</p>
+</section>
+<section id="backend-actions">
+<h2>Backend actions<a class="headerlink" href="#backend-actions" title="Link to this heading">¶</a></h2>
+<p>Backend actions are for engine-native tools that are useful but not
+part of the portable sfmapi standard. They are discovered through
+<code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/backend/actions</span></code>, validated through
+<code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/v1/backend/actions/{action_id}:validate</span></code>, and executed as
+normal sfmapi jobs through <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/v1/backend/actions/{action_id}:run</span></code>.
+The run endpoint returns the same <code class="docutils literal notranslate"><span class="pre">202</span> <span class="pre">JobAcceptedResponse</span></code> envelope
+as every other job-submitting endpoint.</p>
+<p>Implement these optional methods when your backend exposes native
+tools. These methods are enough for an action-only backend:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyBackend</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list_backend_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">[{</span>
+            <span class="s2">&quot;action_id&quot;</span><span class="p">:</span> <span class="s2">&quot;openmvg.compute_features&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;display_name&quot;</span><span class="p">:</span> <span class="s2">&quot;OpenMVG compute_features&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="s2">&quot;features&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;stability&quot;</span><span class="p">:</span> <span class="s2">&quot;backend_extension&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;side_effects&quot;</span><span class="p">:</span> <span class="s2">&quot;write&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;input_schema&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span> <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{}},</span>
+            <span class="s2">&quot;required_capabilities&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;features.extract.sift&quot;</span><span class="p">],</span>
+        <span class="p">}]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_backend_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="o">...</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_backend_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;normalized_inputs&quot;</span><span class="p">:</span> <span class="n">inputs</span><span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_backend_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">workspace</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>Descriptor rules:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">action_id</span></code> is a stable, dot-namespaced id such as
+<code class="docutils literal notranslate"><span class="pre">colmap.feature_extractor</span></code>; do not include <code class="docutils literal notranslate"><span class="pre">/</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">input_schema</span></code> and <code class="docutils literal notranslate"><span class="pre">output_schema</span></code> are JSON Schema objects. List
+responses omit them unless the client passes <code class="docutils literal notranslate"><span class="pre">include_schemas=true</span></code>;
+<code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/backend/actions/{action_id}</span></code> always includes them when
+available.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">required_capabilities</span></code> may contain only portable names from
+<code class="docutils literal notranslate"><span class="pre">app.core.capabilities.ALL_KNOWN</span></code>. Backend-native prerequisites
+belong in <code class="docutils literal notranslate"><span class="pre">metadata</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">side_effects</span></code> is one of <code class="docutils literal notranslate"><span class="pre">none</span></code>, <code class="docutils literal notranslate"><span class="pre">read</span></code>, <code class="docutils literal notranslate"><span class="pre">write</span></code>, or <code class="docutils literal notranslate"><span class="pre">unknown</span></code>.
+<code class="docutils literal notranslate"><span class="pre">stability</span></code> is one of <code class="docutils literal notranslate"><span class="pre">stable</span></code>, <code class="docutils literal notranslate"><span class="pre">experimental</span></code>,
+<code class="docutils literal notranslate"><span class="pre">backend_extension</span></code>, or <code class="docutils literal notranslate"><span class="pre">deprecated</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">run_backend_action</span></code> must return a JSON-serializable dict. Accept
+optional <code class="docutils literal notranslate"><span class="pre">workspace</span></code> and <code class="docutils literal notranslate"><span class="pre">progress</span></code> keywords when the action needs a
+scratch directory or wants to emit progress events.</p></li>
+</ul>
+<p>Use sfmapi’s combined contract checker in your backend package so this
+split is enforced in CI:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sfmapi.backends</span><span class="w"> </span><span class="kn">import</span> <span class="n">assert_backend_contract</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">my_backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">MyBackend</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_backend_contract</span><span class="p">():</span>
+    <span class="n">assert_backend_contract</span><span class="p">(</span><span class="n">MyBackend</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>The checker rejects unknown portable capabilities, duplicate
+action/config ids, malformed descriptors, non-portable
+<code class="docutils literal notranslate"><span class="pre">required_capabilities</span></code>, action/config ids leaked through
+<code class="docutils literal notranslate"><span class="pre">capabilities()</span></code>, config schemas for unadvertised capabilities,
+runtime-managed options exposed in <code class="docutils literal notranslate"><span class="pre">backend_options</span></code>, and schemas that
+cannot catch misspelled keys.</p>
+<p>You can also run it without writing a test:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sfmapi<span class="w"> </span>check-backend<span class="w"> </span>--import<span class="w"> </span>my_backend<span class="w"> </span>--backend<span class="w"> </span>my_backend
+</pre></div>
+</div>
+</section>
+<section id="progress-reporting">
+<h2>Progress reporting<a class="headerlink" href="#progress-reporting" title="Link to this heading">¶</a></h2>
+<p>Backends can report best-effort progress by accepting an optional
+keyword-only <code class="docutils literal notranslate"><span class="pre">progress</span></code> argument on long-running methods. The reporter
+writes the same <code class="docutils literal notranslate"><span class="pre">ProgressEvent</span></code> stream served by
+<code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/jobs/{id}/events</span></code> and summarized by
+<code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/jobs/{id}/progress</span></code>. sfmapi detects support from the method
+signature and only passes <code class="docutils literal notranslate"><span class="pre">progress=</span></code> when it is accepted, so adding it
+is backwards compatible.</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">current</span></code> / <code class="docutils literal notranslate"><span class="pre">total</span></code> counts instead of pre-rounded percentages
+when possible:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">database_path</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">pair</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">selected_pairs</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">run_pair</span><span class="p">(</span><span class="n">pair</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">progress</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">progress</span><span class="o">.</span><span class="n">phase_progress</span><span class="p">(</span><span class="s2">&quot;matching&quot;</span><span class="p">,</span> <span class="n">current</span><span class="o">=</span><span class="n">idx</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">selected_pairs</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;num_pairs&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">selected_pairs</span><span class="p">)}</span>
+</pre></div>
+</div>
+<p>Reporter methods:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Use for</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">phase_progress(phase,</span> <span class="pre">current,</span> <span class="pre">total=None,</span> <span class="pre">rate=None)</span></code></p></td>
+<td><p>Numeric progress inside a known phase</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">metric(key,</span> <span class="pre">value)</span></code></p></td>
+<td><p>Scalar telemetry such as pairs/sec</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">warning(message)</span></code></p></td>
+<td><p>Non-fatal backend warnings</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">log_line(level,</span> <span class="pre">message)</span></code></p></td>
+<td><p>Human-readable backend log lines</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">snapshot_available(snapshot_seq,</span> <span class="pre">summary)</span></code></p></td>
+<td><p>Snapshot publication, normally emitted by sfmapi mapping tasks</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>For core worker tasks, sfmapi emits the phase start/completion
+envelope; backends usually emit intermediate <code class="docutils literal notranslate"><span class="pre">phase_progress</span></code>,
+<code class="docutils literal notranslate"><span class="pre">metric</span></code>, <code class="docutils literal notranslate"><span class="pre">warning</span></code>, or <code class="docutils literal notranslate"><span class="pre">log_line</span></code> events. Progress is telemetry, not
+control flow. A backend should never fail a job because progress
+delivery failed.</p>
+</section>
+<section id="what-sfmapi-guarantees-you">
+<h2>What sfmapi guarantees you<a class="headerlink" href="#what-sfmapi-guarantees-you" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><strong>No subprocess management for free</strong> — workers run in a process
+the supervisor manages. Lease / heartbeat / cancellation happens
+outside your method.</p></li>
+<li><p><strong>Sealed-snapshot writes</strong> — write your reconstruction artifacts
+under a tempdir; sfmapi atomically renames into <code class="docutils literal notranslate"><span class="pre">snapshots/{seq}/</span></code>
+and signals the API.</p></li>
+<li><p><strong>Cache-key salt</strong> — <code class="docutils literal notranslate"><span class="pre">runtime_versions()</span></code> rolls into the cache key
+for every task. Bump any returned key on engine upgrades.</p></li>
+<li><p><strong>Tenancy isolation</strong> — file paths and DB rows already filtered by
+<code class="docutils literal notranslate"><span class="pre">tenant_id</span></code>. Your methods only see the per-tenant workspace.</p></li>
+</ul>
+</section>
+<section id="what-sfmapi-does-not-do">
+<h2>What sfmapi does NOT do<a class="headerlink" href="#what-sfmapi-does-not-do" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Install your engine.</strong> Bring your own pycolmap / OpenSfM /
+hloc / custom binary. Backends typically declare them as
+Python deps and let <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span></code> resolve.</p></li>
+<li><p><strong>Configure CUDA.</strong> Backends that need a GPU must check at startup
+and either work in CPU-fallback mode or raise from <code class="docutils literal notranslate"><span class="pre">__init__</span></code>.</p></li>
+<li><p><strong>Validate your dicts.</strong> The <code class="docutils literal notranslate"><span class="pre">dict</span></code> return shape is loose; clients
+validate against the OpenAPI scene artifact schemas if they care.</p></li>
+</ul>
+</section>
+<section id="reference-the-no-op-stub">
+<h2>Reference: the no-op stub<a class="headerlink" href="#reference-the-no-op-stub" title="Link to this heading">¶</a></h2>
+<p><a class="reference internal" href="../server/adapters.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">app.adapters.stub_backend.StubBackend</span></code></span></a> is the internal no-op reference
+that ships in this repo. It exists for tests, ephemeral mode, and
+SDK live-server suites. Every method raises
+<code class="docutils literal notranslate"><span class="pre">CapabilityUnavailableError</span></code>; <code class="docutils literal notranslate"><span class="pre">capabilities()</span></code> returns the empty
+set; <code class="docutils literal notranslate"><span class="pre">runtime_versions()</span></code> returns a single <code class="docutils literal notranslate"><span class="pre">stub_version</span></code> key.</p>
+<p>Use it as a template:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cp<span class="w"> </span>-r<span class="w"> </span>vendor/your-backend-template<span class="w"> </span>my-backend/
+<span class="c1"># then implement the methods incrementally, advertising each</span>
+<span class="c1"># capability only after wiring it.</span>
+</pre></div>
+</div>
+</section>
+<section id="testing-a-backend">
+<h2>Testing a backend<a class="headerlink" href="#testing-a-backend" title="Link to this heading">¶</a></h2>
+<p>Reuse sfmapi’s contract tests against your registered backend:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;contract&quot;</span><span class="w"> </span>--backend<span class="o">=</span>my_backend
+</pre></div>
+</div>
+<p>…where the <code class="docutils literal notranslate"><span class="pre">--backend</span></code> arg is whatever your test harness wires
+through <code class="docutils literal notranslate"><span class="pre">sfmapi.runtime.register_backend()</span></code> in a conftest. The contract tests
+assert the protocol shape, not engine semantics — they catch
+“forgot to add the new method when sfmapi added one to the
+Protocol” regressions.</p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="plugin_hub_checklist.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Plugin Hub Implementation Checklist</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../reference/errors.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Error Model</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, the sfmapi authors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/SFMAPI/sfmapi" aria-label="GitHub"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16" height="1.2em" width="1.2em" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Implement a backend</a><ul>
+<li><a class="reference internal" href="#backend-levels">Backend levels</a></li>
+<li><a class="reference internal" href="#portable-stage-backend">Portable stage backend</a></li>
+<li><a class="reference internal" href="#action-only-backend">Action-only backend</a></li>
+<li><a class="reference internal" href="#registering-at-startup">Registering at startup</a></li>
+<li><a class="reference internal" href="#reference-backend-packages">Reference backend packages</a></li>
+<li><a class="reference internal" href="#capability-strings">Capability strings</a></li>
+<li><a class="reference internal" href="#stage-output-artifacts">Stage output artifacts</a></li>
+<li><a class="reference internal" href="#stage-input-artifacts">Stage input artifacts</a></li>
+<li><a class="reference internal" href="#backend-artifact-contracts">Backend artifact contracts</a></li>
+<li><a class="reference internal" href="#backend-config-schemas">Backend config schemas</a></li>
+<li><a class="reference internal" href="#backend-actions">Backend actions</a></li>
+<li><a class="reference internal" href="#progress-reporting">Progress reporting</a></li>
+<li><a class="reference internal" href="#what-sfmapi-guarantees-you">What sfmapi guarantees you</a></li>
+<li><a class="reference internal" href="#what-sfmapi-does-not-do">What sfmapi does NOT do</a></li>
+<li><a class="reference internal" href="#reference-the-no-op-stub">Reference: the no-op stub</a></li>
+<li><a class="reference internal" href="#testing-a-backend">Testing a backend</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=f539c95a"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../_static/custom.js?v=2caf5c0b"></script>
+    </body>
+</html>
